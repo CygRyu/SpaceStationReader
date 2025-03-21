@@ -65,11 +65,6 @@
     animation: progress var(--duration) linear infinite;
 }
 
-/* Ensure the progress bar has smooth transitions */
-#rp-progress {
-    transition: width 0.5s linear;
-}
-
         /* Custom tooltip */
         .tooltip {
             position: relative;
@@ -164,11 +159,8 @@
                         <i class="fas fa-flask text-green-500 mr-2"></i>
                         <span class="font-medium">Research Points: </span>
                         <span id="rp-display" class="ml-1">0</span>
-                        <span id="rp-rate" class="text-xs ml-2 text-gray-500 dark:text-gray-400">(+0.5/min)</span>
+                        <span id="rp-rate" class="text-xs ml-2 text-gray-500 dark:text-gray-400">(+0/min)</span>
                         <span class="tooltiptext">Generated over time. Used for research.</span>
-                    </div>
-                    <div class="w-full h-1 bg-gray-200 dark:bg-gray-700 rounded-full mt-1 overflow-hidden">
-                        <div id="rp-progress" class="h-full bg-green-500 rounded-full" style="width: 0%"></div>
                     </div>
                 </div>
                 <div class="resource-container">
@@ -829,6 +821,106 @@
                 calculateBenefit: (currentLevel, upgrade) => {
                     return (4 + (currentLevel * upgrade.baseValue)) * 60 * 60 * 1000; // Convert hours to ms
                 }
+            },
+            // New enlightenment upgrades
+            {
+                id: 'relic-resonance',
+                name: 'Relic Resonance',
+                description: 'Increases the effects of all relics by {value}%',
+                baseCost: 7,
+                costScaling: 1.8,
+                maxLevel: 5,
+                baseValue: 10,
+                valueScaling: 10,
+                valueFormatter: value => `${value}%`,
+                calculateBenefit: (currentLevel, upgrade) => {
+                    return (currentLevel * upgrade.baseValue) / 100;
+                }
+            },
+            {
+                id: 'eternal-knowledge',
+                name: 'Eternal Knowledge',
+                description: 'Retain {value}% of KP after ascension',
+                baseCost: 9,
+                costScaling: 2.1,
+                maxLevel: 5,
+                baseValue: 10,
+                valueScaling: 10,
+                valueFormatter: value => `${value}%`,
+                calculateBenefit: (currentLevel, upgrade) => {
+                    return (currentLevel * upgrade.baseValue) / 100;
+                }
+            },
+            {
+                id: 'infinite-research',
+                name: 'Infinite Research',
+                description: 'Retain {value}% of RP after ascension',
+                baseCost: 9,
+                costScaling: 2.1,
+                maxLevel: 5,
+                baseValue: 10,
+                valueScaling: 10,
+                valueFormatter: value => `${value}%`,
+                calculateBenefit: (currentLevel, upgrade) => {
+                    return (currentLevel * upgrade.baseValue) / 100;
+                }
+            },
+            {
+                id: 'facility-contractor',
+                name: 'Facility Contractor',
+                description: 'Reduces the KP cost of building new facilities by {value}%',
+                baseCost: 5,
+                costScaling: 1.7,
+                maxLevel: 5,
+                baseValue: 10,
+                valueScaling: 10,
+                valueFormatter: value => `${value}%`,
+                calculateBenefit: (currentLevel, upgrade) => {
+                    return (currentLevel * upgrade.baseValue) / 100;
+                }
+            },
+            {
+                id: 'research-institution',
+                name: 'Research Institution',
+                description: 'Research discovery costs reduced by {value}%',
+                baseCost: 5,
+                costScaling: 1.7,
+                maxLevel: 5,
+                baseValue: 10,
+                valueScaling: 10,
+                valueFormatter: value => `${value}%`,
+                calculateBenefit: (currentLevel, upgrade) => {
+                    return (currentLevel * upgrade.baseValue) / 100;
+                }
+            },
+            {
+                id: 'research-breakthrough',
+                name: 'Research Breakthrough',
+                description: 'Each maxed research provides a {value}% permanent bonus to all resource gains',
+                baseCost: 10,
+                costScaling: 2.2,
+                maxLevel: 5,
+                baseValue: 1,
+                valueScaling: 1,
+                valueFormatter: value => `${value}%`,
+                calculateBenefit: (currentLevel, upgrade) => {
+                    // This will be multiplied by the number of maxed research in the calculation
+                    return (currentLevel * upgrade.baseValue) / 100;
+                }
+            },
+            {
+                id: 'enlightened-reader',
+                name: 'Enlightened Speed Reader',
+                description: 'Increases the base KP rate from all sources by {value}%',
+                baseCost: 4,
+                costScaling: 1.6,
+                maxLevel: 10,
+                baseValue: 5,
+                valueScaling: 5,
+                valueFormatter: value => `${value}%`,
+                calculateBenefit: (currentLevel, upgrade) => {
+                    return (currentLevel * upgrade.baseValue) / 100;
+                }
             }
         ];
 
@@ -1012,6 +1104,90 @@
                 },
                 applyEffect: (value) => value/100
             },
+            { 
+                type: 'timeWarp', 
+                description: 'Reduces relic hunt times by {value}%',
+                minValue: 25, 
+                maxValue: 50,
+                rarity: {
+                    'common': { min: 25, max: 30 },
+                    'uncommon': { min: 30, max: 35 },
+                    'rare': { min: 35, max: 45 },
+                    'epic': { min: 45, max: 50 }
+                },
+                applyEffect: (value) => value/100
+            },
+            { 
+                type: 'quantumLeap', 
+                description: 'Increases the chance of finding rare or epic relics by {value}%',
+                minValue: 10, 
+                maxValue: 20,
+                rarity: {
+                    'uncommon': { min: 10, max: 12 },
+                    'rare': { min: 12, max: 16 },
+                    'epic': { min: 16, max: 20 }
+                },
+                applyEffect: (value) => value/100
+            },
+            { 
+                type: 'temporalCompression', 
+                description: 'Books completed count as {value}x for enlightenment point calculations',
+                minValue: 1.2, 
+                maxValue: 1.5,
+                rarity: {
+                    'uncommon': { min: 1.2, max: 1.3 },
+                    'rare': { min: 1.3, max: 1.4 },
+                    'epic': { min: 1.4, max: 1.5 }
+                },
+                applyEffect: (value, books) => books * value
+            },
+            { 
+                type: 'adaptiveInterface', 
+                description: 'Increases offline progress cap by {value} hours',
+                minValue: 1, 
+                maxValue: 8,
+                rarity: {
+                    'common': { min: 1, max: 2 },
+                    'uncommon': { min: 2, max: 4 },
+                    'rare': { min: 4, max: 6 },
+                    'epic': { min: 6, max: 8 }
+                },
+                applyEffect: (value) => value * 60 * 60 * 1000 // Convert hours to ms
+            },
+            { 
+                type: 'harmonicResonator', 
+                description: 'Each completed facility increases the effect of all other facilities by {value}%',
+                minValue: 2, 
+                maxValue: 5,
+                rarity: {
+                    'rare': { min: 2, max: 3 },
+                    'epic': { min: 3, max: 5 }
+                },
+                applyEffect: (value, facilityCount) => 1 + ((facilityCount - 1) * value / 100)
+            },
+            { 
+                type: 'researchCatalyst', 
+                description: 'Research projects have a {value}% chance to instantly gain a level when researched or upgraded',
+                minValue: 5, 
+                maxValue: 15,
+                rarity: {
+                    'uncommon': { min: 5, max: 8 },
+                    'rare': { min: 8, max: 12 },
+                    'epic': { min: 12, max: 15 }
+                },
+                applyEffect: (value) => value/100
+            },
+            { 
+                type: 'bookmarkOfInfinity', 
+                description: '{value}% chance of pages read counting as double',
+                minValue: 5, 
+                maxValue: 10,
+                rarity: {
+                    'rare': { min: 5, max: 7 },
+                    'epic': { min: 7, max: 10 }
+                },
+                applyEffect: (value) => value/100
+            }
         ];
 
         // DOM element references
@@ -1061,7 +1237,6 @@
             epDisplay: document.getElementById('ep-display'),
             kpRate: document.getElementById('kp-rate'),
             rpRate: document.getElementById('rp-rate'),
-            rpProgress: document.getElementById('rp-progress'),
             // Settings and UI
             settingsBtn: document.getElementById('settings-btn'),
             settingsModal: document.getElementById('settings-modal'),
@@ -1349,15 +1524,56 @@
                 if (!rarity) rarity = 'common'; // Fallback
             }
             
+            // Apply Quantum Leap enhancement if present
+            let rarityBump = 0;
+            gameState.relics.forEach(relic => {
+                if (relic.effect.type === 'quantumLeap') {
+                    // Increase chances of better rarity
+                    if (Math.random() < relic.effect.applyEffect(relic.effect.value)) {
+                        rarityBump++;
+                    }
+                }
+            });
+            
+            // Apply rarity enhancement from Relic Resonance
+            const relicResonanceUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'relic-resonance');
+            if (relicResonanceUpgrade && relicResonanceUpgrade.level > 0 && Math.random() < 0.2) {
+                rarityBump++;
+            }
+
+            // Apply rarity bump
+            if (rarityBump > 0) {
+                const rarityOrder = ['common', 'uncommon', 'rare', 'epic'];
+                const currentIndex = rarityOrder.indexOf(rarity);
+                if (currentIndex >= 0 && currentIndex < rarityOrder.length - 1) {
+                    // Bump up to better rarity (but don't exceed epic)
+                    const newIndex = Math.min(currentIndex + rarityBump, rarityOrder.length - 1);
+                    rarity = rarityOrder[newIndex];
+                }
+            }
+            
             const adjective = getRandomElement(adjectives);
             const noun = getRandomElement(relicNouns);
             const name = `${adjective} ${noun}`;
-            const effect = getRandomElement(relicEffects);
+
+            // Filter relics that support this rarity
+            const eligibleEffects = relicEffects.filter(effect => effect.rarity[rarity]);
+            
+            // Pick a random effect from eligible ones
+            const effect = getRandomElement(eligibleEffects);
             
             // Get min and max values based on rarity
             const minValue = effect.rarity[rarity].min;
             const maxValue = effect.rarity[rarity].max;
-            const value = getRandomFloat(minValue, maxValue, 1);
+            let value = getRandomFloat(minValue, maxValue, 1);
+            
+            // Apply relic enhancement from Relic Resonance if applicable
+            if (relicResonanceUpgrade && relicResonanceUpgrade.level > 0) {
+                const resonanceBonus = relicResonanceUpgrade.calculateBenefit(relicResonanceUpgrade.level, relicResonanceUpgrade);
+                value = value * (1 + resonanceBonus);
+                // Round to 1 decimal place for cleaner display
+                value = Math.round(value * 10) / 10;
+            }
             
             return {
                 id: `relic-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
@@ -1498,10 +1714,20 @@
             } else {
                 elements.noFacilitiesMessage.classList.add('hidden');
                 
+                // Count active facilities for Harmonic Resonator effect
+                const activeFacilities = gameState.facilities.filter(f => f.level > 0).length;
+                
                 // Add facilities
                 gameState.facilities.forEach(facility => {
+                    // Apply facility contractor discount if applicable
+                    let facilityContractorDiscount = 0;
+                    const facilityContractorUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'facility-contractor');
+                    if (facilityContractorUpgrade && facilityContractorUpgrade.level > 0 && facility.level === 0) {
+                        facilityContractorDiscount = facilityContractorUpgrade.calculateBenefit(facilityContractorUpgrade.level, facilityContractorUpgrade);
+                    }
+
                     const upgradeCost = facility.level < facility.maxLevel ? 
-                        Math.floor(facility.baseCost * Math.pow(facility.costScaling, facility.level)) : 0;
+                        Math.floor(facility.baseCost * Math.pow(facility.costScaling, facility.level) * (1 - facilityContractorDiscount)) : 0;
                     
                     const facilityElement = document.createElement('div');
                     facilityElement.className = 'bg-white dark:bg-gray-700 p-4 rounded-lg shadow-md';
@@ -1515,6 +1741,16 @@
                         statusClass = 'bg-green-200 dark:bg-green-900 text-green-800 dark:text-green-300';
                     }
                     
+                    // Determine if Harmonic Resonator effects should be displayed
+                    let harmonicBonus = null;
+                    if (facility.level > 0 && activeFacilities > 1) {
+                        gameState.relics.forEach(relic => {
+                            if (relic.effect.type === 'harmonicResonator') {
+                                harmonicBonus = relic.effect.applyEffect(relic.effect.value, activeFacilities);
+                            }
+                        });
+                    }
+                    
                     facilityElement.innerHTML = `
                         <div class="flex justify-between items-start mb-2">
                             <h3 class="font-bold">${facility.name}</h3>
@@ -1523,6 +1759,7 @@
                             </span>
                         </div>
                         <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">${facility.description}</p>
+                        ${harmonicBonus ? `<p class="text-xs text-green-600 dark:text-green-400 mb-2">Enhanced by Harmonic Resonator: +${Math.round((harmonicBonus-1)*100)}% effect</p>` : ''}
                         <div class="flex justify-between items-center">
                             ${facility.level === 0 ? 
                                 `<button class="build-facility-btn bg-primary-500 hover:bg-primary-600 text-white py-1 px-3 rounded-md text-sm transition-colors ${gameState.resources.kp < upgradeCost ? 'opacity-50 cursor-not-allowed' : ''}" 
@@ -1572,8 +1809,16 @@
                 
                 // Add research items
                 gameState.research.forEach(research => {
+                    // Apply research institution discount if applicable
+                    let researchInstitutionDiscount = 0;
+                    const researchInstitutionUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'research-institution');
+                    if (researchInstitutionUpgrade && researchInstitutionUpgrade.level > 0 && research.level === 0) {
+                        researchInstitutionDiscount = researchInstitutionUpgrade.calculateBenefit(
+                            researchInstitutionUpgrade.level, researchInstitutionUpgrade);
+                    }
+
                     const upgradeCost = research.level < research.maxLevel ? 
-                        Math.floor(research.baseCost * Math.pow(research.costScaling, research.level)) : 0;
+                        Math.floor(research.baseCost * Math.pow(research.costScaling, research.level) * (1 - researchInstitutionDiscount)) : 0;
                     
                     const researchElement = document.createElement('div');
                     researchElement.className = 'bg-white dark:bg-gray-700 p-4 rounded-lg shadow-md';
@@ -1587,6 +1832,14 @@
                         statusClass = 'bg-green-200 dark:bg-green-900 text-green-800 dark:text-green-300';
                     }
                     
+                    // Check if Research Breakthrough bonus applies (for maxed research)
+                    let breakthroughBonus = null;
+                    const researchBreakthroughUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'research-breakthrough');
+                    if (researchBreakthroughUpgrade && researchBreakthroughUpgrade.level > 0 && research.level === research.maxLevel) {
+                        breakthroughBonus = researchBreakthroughUpgrade.calculateBenefit(
+                            researchBreakthroughUpgrade.level, researchBreakthroughUpgrade);
+                    }
+                    
                     researchElement.innerHTML = `
                         <div class="flex justify-between items-start mb-2">
                             <h3 class="font-bold">${research.name}</h3>
@@ -1595,6 +1848,7 @@
                             </span>
                         </div>
                         <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">${research.description}</p>
+                        ${breakthroughBonus ? `<p class="text-xs text-green-600 dark:text-green-400 mb-2">Research Breakthrough: +${breakthroughBonus * 100}% to all resource gains</p>` : ''}
                         <div class="flex justify-between items-center">
                             ${research.level === 0 ? 
                                 `<button class="research-item-btn bg-primary-500 hover:bg-primary-600 text-white py-1 px-3 rounded-md text-sm transition-colors ${gameState.resources.rp < upgradeCost ? 'opacity-50 cursor-not-allowed' : ''}" 
@@ -1648,6 +1902,13 @@
                     relicElement.className = 'bg-white dark:bg-gray-700 p-4 rounded-lg shadow-md';
                     
                     const rarityClass = getRarityColor(relic.rarity);
+
+                    // Check if Relic Resonance upgrade is active
+                    let resonanceBonus = null;
+                    const relicResonanceUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'relic-resonance');
+                    if (relicResonanceUpgrade && relicResonanceUpgrade.level > 0) {
+                        resonanceBonus = relicResonanceUpgrade.calculateBenefit(relicResonanceUpgrade.level, relicResonanceUpgrade);
+                    }
                     
                     relicElement.innerHTML = `
                         <div class="flex justify-between items-start mb-2">
@@ -1657,6 +1918,7 @@
                             </span>
                         </div>
                         <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">${relic.description}</p>
+                        ${resonanceBonus ? `<p class="text-xs text-green-600 dark:text-green-400 mb-2">Enhanced by Relic Resonance: +${Math.round(resonanceBonus * 100)}% effect</p>` : ''}
                         <div class="text-xs text-gray-500 dark:text-gray-400">
                             Discovered: ${formatDate(relic.discoveryDate)}
                         </div>
@@ -1796,7 +2058,15 @@
             const epFromRp = Math.floor(gameState.stats.current.totalRpGenerated / 500);
             const epFromFacilities = gameState.facilities.filter(f => f.level > 0).length;
             const epFromResearch = gameState.research.filter(r => r.level > 0).length;
-            const epFromBooks = gameState.stats.current.booksCompleted;
+            
+            // Apply temporal compression if available
+            let bookMultiplier = 1;
+            gameState.relics.forEach(relic => {
+                if (relic.effect.type === 'temporalCompression') {
+                    bookMultiplier = relic.effect.applyEffect(relic.effect.value, 1);
+                }
+            });
+            const epFromBooks = Math.floor(gameState.stats.current.booksCompleted * bookMultiplier);
             
             elements.epFromKp.textContent = formatNumber(epFromKp);
             elements.epFromRp.textContent = formatNumber(epFromRp);
@@ -1813,30 +2083,39 @@
                 elements.relicHuntStatus.classList.remove('hidden');
                 const currentTime = Date.now();
                 const timeRemaining = Math.max(0, gameState.relicHunt.endTime - currentTime);
-                const totalDuration = getHuntTimeFromRarity(getRarityFromHuntTime(gameState.relicHunt.endTime - gameState.relicHunt.startTime));
-                const progress = 100 - (timeRemaining / totalDuration * 100);
+                
+                // Apply Time Warp relic effect to hunt duration display
+                let originalDuration = gameState.relicHunt.endTime - gameState.relicHunt.startTime;
+                gameState.relics.forEach(relic => {
+                    if (relic.effect.type === 'timeWarp') {
+                        // Time Warp already applied when starting hunt, but we need it for progress bar
+                        originalDuration = originalDuration / (1 - relic.effect.applyEffect(relic.effect.value));
+                    }
+                });
+                
+                const progress = 100 - (timeRemaining / originalDuration * 100);
                 
                 elements.relicHuntTime.textContent = formatTime(timeRemaining);
                 elements.relicHuntProgress.style.width = `${progress}%`;
                 
-                if (timeRemaining === 0 && !elements.relicHuntBtn.classList.contains('relic-ready')) {
+                if (timeRemaining === 0 && !elements.huntRelicBtn.classList.contains('relic-ready')) {
                     // Relic hunt complete
-                    elements.relicHuntBtn.innerHTML = '<i class="fas fa-gem animate-pulse mr-2"></i><span>Claim Discovered Relic!</span>';
-                    elements.relicHuntBtn.classList.add('relic-ready');
-                    elements.relicHuntBtn.disabled = false;
-                    elements.relicHuntBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    elements.huntRelicBtn.innerHTML = '<i class="fas fa-gem animate-pulse mr-2"></i><span>Claim Discovered Relic!</span>';
+                    elements.huntRelicBtn.classList.add('relic-ready');
+                    elements.huntRelicBtn.disabled = false;
+                    elements.huntRelicBtn.classList.remove('opacity-50', 'cursor-not-allowed');
                     
                     showNotification('A relic has been discovered! Click to claim it.', 'success');
                 }
             } else {
                 elements.relicHuntStatus.classList.add('hidden');
-                elements.relicHuntBtn.innerHTML = `<i class="fas fa-search mr-2"></i><span>Hunt for Relic (${formatNumber(gameState.discoveryData.relicCost)} QF)</span>`;
-                elements.relicHuntBtn.classList.remove('relic-ready');
+                elements.huntRelicBtn.innerHTML = `<i class="fas fa-search mr-2"></i><span>Hunt for Relic (${formatNumber(gameState.discoveryData.relicCost)} QF)</span>`;
+                elements.huntRelicBtn.classList.remove('relic-ready');
                 
                 // Update button state based on QF availability
-                elements.relicHuntBtn.disabled = gameState.resources.qf < gameState.discoveryData.relicCost;
-                elements.relicHuntBtn.classList.toggle('opacity-50', elements.relicHuntBtn.disabled);
-                elements.relicHuntBtn.classList.toggle('cursor-not-allowed', elements.relicHuntBtn.disabled);
+                elements.huntRelicBtn.disabled = gameState.resources.qf < gameState.discoveryData.relicCost;
+                elements.huntRelicBtn.classList.toggle('opacity-50', elements.huntRelicBtn.disabled);
+                elements.huntRelicBtn.classList.toggle('cursor-not-allowed', elements.huntRelicBtn.disabled);
             }
         }
         
@@ -1848,16 +2127,44 @@
             // Apply KP boost from facilities
             gameState.facilities.forEach(facility => {
                 if (facility.level > 0 && facility.effect.type === 'kpFromPages') {
-                    kp = facility.effect.applyEffect(facility.effect.value * facility.level, kp);
+                    // Apply Harmonic Resonator if available
+                    let harmonicMultiplier = 1;
+                    if (gameState.facilities.filter(f => f.level > 0).length > 1) {
+                        gameState.relics.forEach(relic => {
+                            if (relic.effect.type === 'harmonicResonator') {
+                                harmonicMultiplier = relic.effect.applyEffect(relic.effect.value, 
+                                    gameState.facilities.filter(f => f.level > 0).length);
+                            }
+                        });
+                    }
+                    kp = facility.effect.applyEffect(facility.effect.value * facility.level * harmonicMultiplier, kp);
                 } else if (facility.level > 0 && facility.effect.type === 'kpMultiplier') {
-                    kp = facility.effect.applyEffect(1 + (facility.effect.value - 1) * facility.level, kp);
+                    // Apply Harmonic Resonator if available
+                    let harmonicBonus = 0;
+                    if (gameState.facilities.filter(f => f.level > 0).length > 1) {
+                        gameState.relics.forEach(relic => {
+                            if (relic.effect.type === 'harmonicResonator') {
+                                harmonicBonus = (relic.effect.applyEffect(relic.effect.value, 
+                                    gameState.facilities.filter(f => f.level > 0).length) - 1);
+                            }
+                        });
+                    }
+                    const effectiveValue = 1 + ((facility.effect.value - 1) * (1 + harmonicBonus));
+                    kp = facility.effect.applyEffect(effectiveValue, kp);
                 }
             });
             
             // Apply KP boost from relics
             gameState.relics.forEach(relic => {
                 if (relic.effect.type === 'allResourceBoost') {
-                    kp *= (1 + relic.effect.applyEffect(relic.effect.value));
+                    // Apply Relic Resonance if available
+                    let resonanceMultiplier = 1;
+                    const relicResonanceUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'relic-resonance');
+                    if (relicResonanceUpgrade && relicResonanceUpgrade.level > 0) {
+                        resonanceMultiplier = 1 + relicResonanceUpgrade.calculateBenefit(
+                            relicResonanceUpgrade.level, relicResonanceUpgrade);
+                    }
+                    kp *= (1 + relic.effect.applyEffect(relic.effect.value * resonanceMultiplier));
                 } else if (relic.effect.type === 'bonusPageValue') {
                     // This is already applied to the pages value in logReading
                 }
@@ -1867,6 +2174,23 @@
             const kpBoostUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'kp-boost');
             if (kpBoostUpgrade && kpBoostUpgrade.level > 0) {
                 kp *= (1 + kpBoostUpgrade.calculateBenefit(kpBoostUpgrade.level, kpBoostUpgrade));
+            }
+            
+            // Apply Speed Reader bonus if available
+            const speedReaderUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'enlightened-reader');
+            if (speedReaderUpgrade && speedReaderUpgrade.level > 0) {
+                kp *= (1 + speedReaderUpgrade.calculateBenefit(speedReaderUpgrade.level, speedReaderUpgrade));
+            }
+            
+            // Apply Research Breakthrough bonus if available
+            const researchBreakthroughUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'research-breakthrough');
+            if (researchBreakthroughUpgrade && researchBreakthroughUpgrade.level > 0) {
+                const maxedResearchCount = gameState.research.filter(r => r.level === r.maxLevel).length;
+                if (maxedResearchCount > 0) {
+                    const breakthroughBonus = researchBreakthroughUpgrade.calculateBenefit(
+                        researchBreakthroughUpgrade.level, researchBreakthroughUpgrade) * maxedResearchCount;
+                    kp *= (1 + breakthroughBonus);
+                }
             }
             
             return Math.floor(kp);
@@ -1879,7 +2203,17 @@
             // Apply QF chance boost from facilities
             gameState.facilities.forEach(facility => {
                 if (facility.level > 0 && facility.effect.type === 'qfChance') {
-                    baseChance += facility.effect.applyEffect(facility.effect.value * facility.level);
+                    // Apply Harmonic Resonator if available
+                    let harmonicMultiplier = 1;
+                    if (gameState.facilities.filter(f => f.level > 0).length > 1) {
+                        gameState.relics.forEach(relic => {
+                            if (relic.effect.type === 'harmonicResonator') {
+                                harmonicMultiplier = relic.effect.applyEffect(relic.effect.value, 
+                                    gameState.facilities.filter(f => f.level > 0).length);
+                            }
+                        });
+                    }
+                    baseChance += facility.effect.applyEffect(facility.effect.value * facility.level * harmonicMultiplier);
                 }
             });
             
@@ -1893,9 +2227,28 @@
             baseChance = Math.min(baseChance, 0.1);
             
             let qfGained = 0;
+            // Check for Bookmark of Infinity bonus
+            let bookmarkChance = 0;
+            gameState.relics.forEach(relic => {
+                if (relic.effect.type === 'bookmarkOfInfinity') {
+                    // Apply Relic Resonance if available
+                    let resonanceMultiplier = 1;
+                    const relicResonanceUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'relic-resonance');
+                    if (relicResonanceUpgrade && relicResonanceUpgrade.level > 0) {
+                        resonanceMultiplier = 1 + relicResonanceUpgrade.calculateBenefit(
+                            relicResonanceUpgrade.level, relicResonanceUpgrade);
+                    }
+                    bookmarkChance = relic.effect.applyEffect(relic.effect.value * resonanceMultiplier);
+                }
+            });
+            
             for (let i = 0; i < pages; i++) {
                 if (Math.random() < baseChance) {
                     qfGained++;
+                }
+                // Bookmark of Infinity can double pages
+                if (bookmarkChance > 0 && Math.random() < bookmarkChance) {
+                    qfGained++; // Double QF chance
                 }
             }
             
@@ -1914,9 +2267,34 @@
             let effectivePages = pagesRead;
             gameState.relics.forEach(relic => {
                 if (relic.effect.type === 'bonusPageValue') {
-                    effectivePages = relic.effect.applyEffect(relic.effect.value, effectivePages);
+                    // Apply Relic Resonance if available
+                    let resonanceMultiplier = 1;
+                    const relicResonanceUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'relic-resonance');
+                    if (relicResonanceUpgrade && relicResonanceUpgrade.level > 0) {
+                        resonanceMultiplier = 1 + relicResonanceUpgrade.calculateBenefit(
+                            relicResonanceUpgrade.level, relicResonanceUpgrade);
+                    }
+                    effectivePages = relic.effect.applyEffect(relic.effect.value * resonanceMultiplier, effectivePages);
                 }
             });
+            
+            // Check for Bookmark of Infinity double pages chance
+            let bookmarkBonus = 0;
+            gameState.relics.forEach(relic => {
+                if (relic.effect.type === 'bookmarkOfInfinity') {
+                    // For each page, check if it counts double
+                    for (let i = 0; i < pagesRead; i++) {
+                        if (Math.random() < relic.effect.applyEffect(relic.effect.value)) {
+                            bookmarkBonus++;
+                        }
+                    }
+                }
+            });
+            
+            if (bookmarkBonus > 0) {
+                effectivePages += bookmarkBonus;
+                showNotification(`Bookmark of Infinity activated! ${bookmarkBonus} extra pages counted.`, 'success');
+            }
             
             // Calculate KP gain
             const kpGained = calculateKPGain(effectivePages);
@@ -1986,7 +2364,14 @@
                     // Check for relics that give QF on book completion
                     gameState.relics.forEach(relic => {
                         if (relic.effect.type === 'qfOnCompletion') {
-                            const bonusQf = relic.effect.applyEffect(relic.effect.value);
+                            // Apply Relic Resonance if available
+                            let resonanceMultiplier = 1;
+                            const relicResonanceUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'relic-resonance');
+                            if (relicResonanceUpgrade && relicResonanceUpgrade.level > 0) {
+                                resonanceMultiplier = 1 + relicResonanceUpgrade.calculateBenefit(
+                                    relicResonanceUpgrade.level, relicResonanceUpgrade);
+                            }
+                            const bonusQf = Math.floor(relic.effect.applyEffect(relic.effect.value * resonanceMultiplier));
                             gameState.resources.qf += bonusQf;
                             gameState.stats.allTime.totalQfFound += bonusQf;
                             gameState.stats.current.totalQfFound += bonusQf;
@@ -2034,7 +2419,14 @@
                     // Check for relics that give QF on book completion
                     gameState.relics.forEach(relic => {
                         if (relic.effect.type === 'qfOnCompletion') {
-                            const bonusQf = relic.effect.applyEffect(relic.effect.value);
+                            // Apply Relic Resonance if available
+                            let resonanceMultiplier = 1;
+                            const relicResonanceUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'relic-resonance');
+                            if (relicResonanceUpgrade && relicResonanceUpgrade.level > 0) {
+                                resonanceMultiplier = 1 + relicResonanceUpgrade.calculateBenefit(
+                                    relicResonanceUpgrade.level, relicResonanceUpgrade);
+                            }
+                            const bonusQf = Math.floor(relic.effect.applyEffect(relic.effect.value * resonanceMultiplier));
                             gameState.resources.qf += bonusQf;
                             gameState.stats.allTime.totalQfFound += bonusQf;
                             gameState.stats.current.totalQfFound += bonusQf;
@@ -2099,7 +2491,14 @@
             // Check for relics that give QF on book completion
             gameState.relics.forEach(relic => {
                 if (relic.effect.type === 'qfOnCompletion') {
-                    const bonusQf = relic.effect.applyEffect(relic.effect.value);
+                    // Apply Relic Resonance if available
+                    let resonanceMultiplier = 1;
+                    const relicResonanceUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'relic-resonance');
+                    if (relicResonanceUpgrade && relicResonanceUpgrade.level > 0) {
+                        resonanceMultiplier = 1 + relicResonanceUpgrade.calculateBenefit(
+                            relicResonanceUpgrade.level, relicResonanceUpgrade);
+                    }
+                    const bonusQf = Math.floor(relic.effect.applyEffect(relic.effect.value * resonanceMultiplier));
                     gameState.resources.qf += bonusQf;
                     gameState.stats.allTime.totalQfFound += bonusQf;
                     gameState.stats.current.totalQfFound += bonusQf;
@@ -2156,9 +2555,34 @@
                 let effectivePages = pages;
                 gameState.relics.forEach(relic => {
                     if (relic.effect.type === 'bonusPageValue') {
-                        effectivePages = relic.effect.applyEffect(relic.effect.value, effectivePages);
+                        // Apply Relic Resonance if available
+                        let resonanceMultiplier = 1;
+                        const relicResonanceUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'relic-resonance');
+                        if (relicResonanceUpgrade && relicResonanceUpgrade.level > 0) {
+                            resonanceMultiplier = 1 + relicResonanceUpgrade.calculateBenefit(
+                                relicResonanceUpgrade.level, relicResonanceUpgrade);
+                        }
+                        effectivePages = relic.effect.applyEffect(relic.effect.value * resonanceMultiplier, effectivePages);
                     }
                 });
+                
+                // Check for Bookmark of Infinity double pages chance
+                let bookmarkBonus = 0;
+                gameState.relics.forEach(relic => {
+                    if (relic.effect.type === 'bookmarkOfInfinity') {
+                        // For each page, check if it counts double
+                        for (let i = 0; i < pages; i++) {
+                            if (Math.random() < relic.effect.applyEffect(relic.effect.value)) {
+                                bookmarkBonus++;
+                            }
+                        }
+                    }
+                });
+                
+                if (bookmarkBonus > 0) {
+                    effectivePages += bookmarkBonus;
+                    showNotification(`Bookmark of Infinity activated! ${bookmarkBonus} extra pages counted.`, 'success');
+                }
                 
                 const kpGained = calculateKPGain(effectivePages);
                 const qfGained = checkForQF(pages);
@@ -2226,14 +2650,23 @@
         }
         
         function discoverFacility() {
-            if (gameState.resources.kp < gameState.discoveryData.facilityCost || 
+            // Apply facility contractor discount if applicable
+            let facilityCost = gameState.discoveryData.facilityCost;
+            const facilityContractorUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'facility-contractor');
+            if (facilityContractorUpgrade && facilityContractorUpgrade.level > 0) {
+                const discount = facilityContractorUpgrade.calculateBenefit(
+                    facilityContractorUpgrade.level, facilityContractorUpgrade);
+                facilityCost = Math.floor(facilityCost * (1 - discount));
+            }
+
+            if (gameState.resources.kp < facilityCost || 
                 gameState.resources.rp < gameState.discoveryData.facilityRpCost) {
                 showNotification('Not enough resources to discover a facility', 'error');
                 return;
             }
             
             // Deduct resources
-            gameState.resources.kp -= gameState.discoveryData.facilityCost;
+            gameState.resources.kp -= facilityCost;
             gameState.resources.rp -= gameState.discoveryData.facilityRpCost;
             
             // Generate a new facility
@@ -2257,7 +2690,14 @@
             const facility = gameState.facilities.find(f => f.id === facilityId);
             if (!facility) return;
             
-            const cost = Math.floor(facility.baseCost * Math.pow(facility.costScaling, facility.level));
+            // Apply facility contractor discount if applicable
+            let cost = Math.floor(facility.baseCost * Math.pow(facility.costScaling, facility.level));
+            const facilityContractorUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'facility-contractor');
+            if (facilityContractorUpgrade && facilityContractorUpgrade.level > 0) {
+                const discount = facilityContractorUpgrade.calculateBenefit(
+                    facilityContractorUpgrade.level, facilityContractorUpgrade);
+                cost = Math.floor(cost * (1 - discount));
+            }
             
             if (gameState.resources.kp < cost) {
                 showNotification('Not enough Knowledge Points to build this facility', 'error');
@@ -2289,7 +2729,14 @@
             let finalCost = cost;
             gameState.relics.forEach(relic => {
                 if (relic.effect.type === 'facilityUpgradeCost') {
-                    finalCost = relic.effect.applyEffect(relic.effect.value, finalCost);
+                    // Apply Relic Resonance if available
+                    let resonanceMultiplier = 1;
+                    const relicResonanceUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'relic-resonance');
+                    if (relicResonanceUpgrade && relicResonanceUpgrade.level > 0) {
+                        resonanceMultiplier = 1 + relicResonanceUpgrade.calculateBenefit(
+                            relicResonanceUpgrade.level, relicResonanceUpgrade);
+                    }
+                    finalCost = relic.effect.applyEffect(relic.effect.value * resonanceMultiplier, finalCost);
                 }
             });
             finalCost = Math.floor(finalCost);
@@ -2318,13 +2765,22 @@
         }
         
         function discoverResearch() {
-            if (gameState.resources.rp < gameState.discoveryData.researchCost) {
+            // Apply research institution discount if applicable
+            let researchCost = gameState.discoveryData.researchCost;
+            const researchInstitutionUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'research-institution');
+            if (researchInstitutionUpgrade && researchInstitutionUpgrade.level > 0) {
+                const discount = researchInstitutionUpgrade.calculateBenefit(
+                    researchInstitutionUpgrade.level, researchInstitutionUpgrade);
+                researchCost = Math.floor(researchCost * (1 - discount));
+            }
+
+            if (gameState.resources.rp < researchCost) {
                 showNotification('Not enough Research Points to discover new research', 'error');
                 return;
             }
             
             // Deduct resources
-            gameState.resources.rp -= gameState.discoveryData.researchCost;
+            gameState.resources.rp -= researchCost;
             
             // Generate a new research
             const newResearch = generateResearch();
@@ -2359,9 +2815,25 @@
             // Apply cost reduction from relics
             gameState.relics.forEach(relic => {
                 if (relic.effect.type === 'researchUpgradeCost') {
-                    finalCost = relic.effect.applyEffect(relic.effect.value, finalCost);
+                    // Apply Relic Resonance if available
+                    let resonanceMultiplier = 1;
+                    const relicResonanceUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'relic-resonance');
+                    if (relicResonanceUpgrade && relicResonanceUpgrade.level > 0) {
+                        resonanceMultiplier = 1 + relicResonanceUpgrade.calculateBenefit(
+                            relicResonanceUpgrade.level, relicResonanceUpgrade);
+                    }
+                    finalCost = relic.effect.applyEffect(relic.effect.value * resonanceMultiplier, finalCost);
                 }
             });
+            
+            // Apply research institution discount if applicable
+            const researchInstitutionUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'research-institution');
+            if (researchInstitutionUpgrade && researchInstitutionUpgrade.level > 0 && research.level === 0) {
+                const discount = researchInstitutionUpgrade.calculateBenefit(
+                    researchInstitutionUpgrade.level, researchInstitutionUpgrade);
+                finalCost = Math.floor(finalCost * (1 - discount));
+            }
+            
             finalCost = Math.floor(finalCost);
             
             if (gameState.resources.rp < finalCost) {
@@ -2375,11 +2847,35 @@
             // Upgrade research
             research.level++;
             
+            // Check for Research Catalyst bonus
+            let catalystActivated = false;
+            gameState.relics.forEach(relic => {
+                if (relic.effect.type === 'researchCatalyst') {
+                    // Apply Relic Resonance if available
+                    let resonanceMultiplier = 1;
+                    const relicResonanceUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'relic-resonance');
+                    if (relicResonanceUpgrade && relicResonanceUpgrade.level > 0) {
+                        resonanceMultiplier = 1 + relicResonanceUpgrade.calculateBenefit(
+                            relicResonanceUpgrade.level, relicResonanceUpgrade);
+                    }
+                    const catalystChance = relic.effect.applyEffect(relic.effect.value * resonanceMultiplier);
+                    
+                    if (Math.random() < catalystChance && research.level < research.maxLevel) {
+                        research.level++;
+                        catalystActivated = true;
+                    }
+                }
+            });
+            
             // Update UI
             updateResearchList();
             updateResourceDisplays();
             updateAscensionRequirements();
             saveGame();
+            
+            if (catalystActivated) {
+                showNotification(`Research Catalyst activated! ${research.name} gained an extra level!`, 'success');
+            }
             
             showNotification(`Researched ${research.name} (Level ${research.level})`, 'success');
         }
@@ -2401,7 +2897,14 @@
             // Apply cost reduction from relics
             gameState.relics.forEach(relic => {
                 if (relic.effect.type === 'researchUpgradeCost') {
-                    finalCost = relic.effect.applyEffect(relic.effect.value, finalCost);
+                    // Apply Relic Resonance if available
+                    let resonanceMultiplier = 1;
+                    const relicResonanceUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'relic-resonance');
+                    if (relicResonanceUpgrade && relicResonanceUpgrade.level > 0) {
+                        resonanceMultiplier = 1 + relicResonanceUpgrade.calculateBenefit(
+                            relicResonanceUpgrade.level, relicResonanceUpgrade);
+                    }
+                    finalCost = relic.effect.applyEffect(relic.effect.value * resonanceMultiplier, finalCost);
                 }
             });
             finalCost = Math.floor(finalCost);
@@ -2417,6 +2920,26 @@
             // Upgrade research
             research.level++;
             
+            // Check for Research Catalyst bonus
+            let catalystActivated = false;
+            gameState.relics.forEach(relic => {
+                if (relic.effect.type === 'researchCatalyst') {
+                    // Apply Relic Resonance if available
+                    let resonanceMultiplier = 1;
+                    const relicResonanceUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'relic-resonance');
+                    if (relicResonanceUpgrade && relicResonanceUpgrade.level > 0) {
+                        resonanceMultiplier = 1 + relicResonanceUpgrade.calculateBenefit(
+                            relicResonanceUpgrade.level, relicResonanceUpgrade);
+                    }
+                    const catalystChance = relic.effect.applyEffect(relic.effect.value * resonanceMultiplier);
+                    
+                    if (Math.random() < catalystChance && research.level < research.maxLevel) {
+                        research.level++;
+                        catalystActivated = true;
+                    }
+                }
+            });
+            
             // Update research description with new value
             const newValue = research.effect.value + research.effect.valueScaling * (research.level - 1);
             research.description = research.description.replace(/\d+(\.\d+)?/, newValue);
@@ -2425,6 +2948,10 @@
             updateResearchList();
             updateResourceDisplays();
             saveGame();
+            
+            if (catalystActivated) {
+                showNotification(`Research Catalyst activated! ${research.name} gained an extra level!`, 'success');
+            }
             
             showNotification(`Upgraded ${research.name} to Level ${research.level}`, 'success');
         }
@@ -2474,6 +3001,21 @@
             } else { // 5% chance for epic
                 huntTimeMs = 4 * 60 * 60 * 1000; // 4 hours
             }
+            
+            // Apply Time Warp relic effect if available
+            gameState.relics.forEach(relic => {
+                if (relic.effect.type === 'timeWarp') {
+                    // Apply Relic Resonance if available
+                    let resonanceMultiplier = 1;
+                    const relicResonanceUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'relic-resonance');
+                    if (relicResonanceUpgrade && relicResonanceUpgrade.level > 0) {
+                        resonanceMultiplier = 1 + relicResonanceUpgrade.calculateBenefit(
+                            relicResonanceUpgrade.level, relicResonanceUpgrade);
+                    }
+                    const reduction = relic.effect.applyEffect(relic.effect.value * resonanceMultiplier);
+                    huntTimeMs = Math.floor(huntTimeMs * (1 - reduction));
+                }
+            });
             
             // Start the hunt
             gameState.relicHunt = {
@@ -2541,12 +3083,34 @@
             epGain += Math.floor(gameState.stats.current.totalRpGenerated / 500); // 1 EP per 500 RP
             epGain += gameState.facilities.filter(f => f.level > 0).length; // 1 EP per active facility
             epGain += gameState.research.filter(r => r.level > 0).length; // 1 EP per active research
-            epGain += gameState.stats.current.booksCompleted; // 1 EP per completed book
+            
+            // Apply temporal compression for books if available
+            let bookMultiplier = 1;
+            gameState.relics.forEach(relic => {
+                if (relic.effect.type === 'temporalCompression') {
+                    // Apply Relic Resonance if available
+                    let resonanceMultiplier = 1;
+                    const relicResonanceUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'relic-resonance');
+                    if (relicResonanceUpgrade && relicResonanceUpgrade.level > 0) {
+                        resonanceMultiplier = 1 + relicResonanceUpgrade.calculateBenefit(
+                            relicResonanceUpgrade.level, relicResonanceUpgrade);
+                    }
+                    bookMultiplier = relic.effect.applyEffect(relic.effect.value * resonanceMultiplier, 1);
+                }
+            });
+            epGain += Math.floor(gameState.stats.current.booksCompleted * bookMultiplier); // EP per completed book with possible multiplier
             
             // Apply EP boost from relics
             gameState.relics.forEach(relic => {
                 if (relic.effect.type === 'enlightenmentBoost') {
-                    epGain = Math.floor(epGain * (1 + relic.effect.applyEffect(relic.effect.value)));
+                    // Apply Relic Resonance if available
+                    let resonanceMultiplier = 1;
+                    const relicResonanceUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'relic-resonance');
+                    if (relicResonanceUpgrade && relicResonanceUpgrade.level > 0) {
+                        resonanceMultiplier = 1 + relicResonanceUpgrade.calculateBenefit(
+                            relicResonanceUpgrade.level, relicResonanceUpgrade);
+                    }
+                    epGain = Math.floor(epGain * (1 + relic.effect.applyEffect(relic.effect.value * resonanceMultiplier)));
                 }
             });
             
@@ -2568,13 +3132,32 @@
                         gameState.stats.allTime.mostPagesInOnePlaythrough = gameState.stats.current.totalPagesRead;
                     }
                     
-                    // Save QF based on retention rate
+                    // Save resources based on retention upgrades
+                    // QF retention
                     const qfRetentionUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'qf-retention');
-                    let retentionRate = 0.5; // Default 50%
+                    let qfRetentionRate = 0.5; // Default 50%
                     if (qfRetentionUpgrade && qfRetentionUpgrade.level > 0) {
-                        retentionRate = qfRetentionUpgrade.calculateBenefit(qfRetentionUpgrade.level, qfRetentionUpgrade);
+                        qfRetentionRate = qfRetentionUpgrade.calculateBenefit(qfRetentionUpgrade.level, qfRetentionUpgrade);
                     }
-                    const qfRetained = Math.floor(gameState.resources.qf * retentionRate);
+                    const qfRetained = Math.floor(gameState.resources.qf * qfRetentionRate);
+                    
+                    // KP retention (new)
+                    let kpRetained = 0;
+                    const eternalKnowledgeUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'eternal-knowledge');
+                    if (eternalKnowledgeUpgrade && eternalKnowledgeUpgrade.level > 0) {
+                        const kpRetentionRate = eternalKnowledgeUpgrade.calculateBenefit(
+                            eternalKnowledgeUpgrade.level, eternalKnowledgeUpgrade);
+                        kpRetained = Math.floor(gameState.resources.kp * kpRetentionRate);
+                    }
+                    
+                    // RP retention (new)
+                    let rpRetained = 0;
+                    const infiniteResearchUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'infinite-research');
+                    if (infiniteResearchUpgrade && infiniteResearchUpgrade.level > 0) {
+                        const rpRetentionRate = infiniteResearchUpgrade.calculateBenefit(
+                            infiniteResearchUpgrade.level, infiniteResearchUpgrade);
+                        rpRetained = Math.floor(gameState.resources.rp * rpRetentionRate);
+                    }
                     
                     // Select facilities to retain if upgrade is active
                     const facilityRetentionUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'facility-retention');
@@ -2589,7 +3172,7 @@
                                 retainCount,
                                 selectedFacilities => {
                                     facilitiesToRetain = selectedFacilities;
-                                    continueAscension(qfRetained, facilitiesToRetain, []);
+                                    continueAscension(qfRetained, kpRetained, rpRetained, facilitiesToRetain, []);
                                 }
                             );
                             return;
@@ -2609,19 +3192,19 @@
                                 retainCount,
                                 selectedResearch => {
                                     researchToRetain = selectedResearch;
-                                    continueAscension(qfRetained, facilitiesToRetain, researchToRetain);
+                                    continueAscension(qfRetained, kpRetained, rpRetained, facilitiesToRetain, researchToRetain);
                                 }
                             );
                             return;
                         }
                     }
                     
-                    continueAscension(qfRetained, facilitiesToRetain, researchToRetain);
+                    continueAscension(qfRetained, kpRetained, rpRetained, facilitiesToRetain, researchToRetain);
                 }
             );
         }
         
-        function continueAscension(qfRetained, facilitiesToRetain, researchToRetain) {
+        function continueAscension(qfRetained, kpRetained, rpRetained, facilitiesToRetain, researchToRetain) {
             // Filter facilities to retain
             const retainedFacilities = [];
             if (facilitiesToRetain.length > 0) {
@@ -2644,10 +3227,10 @@
                 });
             }
             
-            // Reset resources, except EP and retained QF
+            // Reset resources, retaining the specified amounts
             gameState.resources = {
-                kp: 0,
-                rp: 0,
+                kp: kpRetained,
+                rp: rpRetained,
                 qf: qfRetained,
                 ep: gameState.resources.ep,
                 kpRate: 0,
@@ -2813,7 +3396,14 @@ function gameTick() {
     // Apply global resource boost from relics
     gameState.relics.forEach(relic => {
         if (relic.effect.type === 'allResourceBoost') {
-            rpGain *= (1 + relic.effect.applyEffect(relic.effect.value));
+            // Apply Relic Resonance if available
+            let resonanceMultiplier = 1;
+            const relicResonanceUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'relic-resonance');
+            if (relicResonanceUpgrade && relicResonanceUpgrade.level > 0) {
+                resonanceMultiplier = 1 + relicResonanceUpgrade.calculateBenefit(
+                    relicResonanceUpgrade.level, relicResonanceUpgrade);
+            }
+            rpGain *= (1 + relic.effect.applyEffect(relic.effect.value * resonanceMultiplier));
         }
     });
 
@@ -2822,33 +3412,32 @@ function gameTick() {
     if (rpBoostUpgrade && rpBoostUpgrade.level > 0) {
         rpGain *= (1 + rpBoostUpgrade.calculateBenefit(rpBoostUpgrade.level, rpBoostUpgrade));
     }
+    
+    // Apply Research Breakthrough bonus if available
+    const researchBreakthroughUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'research-breakthrough');
+    if (researchBreakthroughUpgrade && researchBreakthroughUpgrade.level > 0) {
+        const maxedResearchCount = gameState.research.filter(r => r.level === r.maxLevel).length;
+        if (maxedResearchCount > 0) {
+            const breakthroughBonus = researchBreakthroughUpgrade.calculateBenefit(
+                researchBreakthroughUpgrade.level, researchBreakthroughUpgrade) * maxedResearchCount;
+            rpGain *= (1 + breakthroughBonus);
+        }
+    }
 
     gameState.resources.rp += rpGain;
     gameState.stats.allTime.totalRpGenerated += rpGain;
     gameState.stats.current.totalRpGenerated += rpGain;
-
-    // Update RP progress bar
-    const rpPerSecond = gameState.resources.rpRate / 60;
-    if (rpPerSecond > 0) {
-        const rpCycleDuration = 1 / rpPerSecond; // Time in seconds for 1 RP
-        const rpCycleElapsed = (Date.now() / 1000) % rpCycleDuration;
-        const progress = (rpCycleElapsed / rpCycleDuration) * 100;
-
-        // Apply smooth transition to the progress bar
-        elements.rpProgress.style.transition = 'width 0.5s linear';
-        elements.rpProgress.style.width = `${progress}%`;
-    }
 
     // Update relic hunt timer
     if (gameState.relicHunt.active) {
         updateRelicHuntUI();
 
         // Check if relic hunt is complete
-        if (now >= gameState.relicHunt.endTime && !elements.relicHuntBtn.classList.contains('relic-ready')) {
-            elements.relicHuntBtn.innerHTML = '<i class="fas fa-gem animate-pulse mr-2"></i><span>Claim Discovered Relic!</span>';
-            elements.relicHuntBtn.classList.add('relic-ready');
-            elements.relicHuntBtn.disabled = false;
-            elements.relicHuntBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        if (now >= gameState.relicHunt.endTime && !elements.huntRelicBtn.classList.contains('relic-ready')) {
+            elements.huntRelicBtn.innerHTML = '<i class="fas fa-gem animate-pulse mr-2"></i><span>Claim Discovered Relic!</span>';
+            elements.huntRelicBtn.classList.add('relic-ready');
+            elements.huntRelicBtn.disabled = false;
+            elements.huntRelicBtn.classList.remove('opacity-50', 'cursor-not-allowed');
 
             showNotification('A relic has been discovered! Click to claim it.', 'success');
         }
@@ -2879,7 +3468,14 @@ function gameTick() {
             // Apply global resource boost from relics
             gameState.relics.forEach(relic => {
                 if (relic.effect.type === 'allResourceBoost') {
-                    rpGain *= (1 + relic.effect.applyEffect(relic.effect.value));
+                    // Apply Relic Resonance if available
+                    let resonanceMultiplier = 1;
+                    const relicResonanceUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'relic-resonance');
+                    if (relicResonanceUpgrade && relicResonanceUpgrade.level > 0) {
+                        resonanceMultiplier = 1 + relicResonanceUpgrade.calculateBenefit(
+                            relicResonanceUpgrade.level, relicResonanceUpgrade);
+                    }
+                    rpGain *= (1 + relic.effect.applyEffect(relic.effect.value * resonanceMultiplier));
                 }
             });
             
@@ -2887,6 +3483,17 @@ function gameTick() {
             const rpBoostUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'rp-boost');
             if (rpBoostUpgrade && rpBoostUpgrade.level > 0) {
                 rpGain *= (1 + rpBoostUpgrade.calculateBenefit(rpBoostUpgrade.level, rpBoostUpgrade));
+            }
+            
+            // Apply Research Breakthrough bonus if available
+            const researchBreakthroughUpgrade = gameState.enlightenmentUpgrades.find(u => u.id === 'research-breakthrough');
+            if (researchBreakthroughUpgrade && researchBreakthroughUpgrade.level > 0) {
+                const maxedResearchCount = gameState.research.filter(r => r.level === r.maxLevel).length;
+                if (maxedResearchCount > 0) {
+                    const breakthroughBonus = researchBreakthroughUpgrade.calculateBenefit(
+                        researchBreakthroughUpgrade.level, researchBreakthroughUpgrade) * maxedResearchCount;
+                    rpGain *= (1 + breakthroughBonus);
+                }
             }
             
             gameState.resources.rp += rpGain;
