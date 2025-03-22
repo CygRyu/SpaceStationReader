@@ -1471,7 +1471,8 @@
                     type: effect.type,
                     value: baseValue,
                     valueScaling: effect.valueScaling,
-                    applyEffect: effect.applyEffect
+                    applyEffect: effect.applyEffect,
+                    description: effect.description // Store original description template for upgrades
                 },
                 level: 0,
                 baseCost: baseCost,
@@ -1496,7 +1497,8 @@
                     type: effect.type,
                     value: baseValue,
                     valueScaling: effect.valueScaling,
-                    applyEffect: effect.applyEffect
+                    applyEffect: effect.applyEffect,
+                    description: effect.description // Store original description template for upgrades
                 },
                 level: 0,
                 baseCost: baseCost,
@@ -1582,7 +1584,8 @@
                 effect: {
                     type: effect.type,
                     value: value,
-                    applyEffect: effect.applyEffect
+                    applyEffect: effect.applyEffect,
+                    description: effect.description // Store original description template for reference
                 },
                 rarity: rarity,
                 discoveryDate: Date.now()
@@ -1964,6 +1967,8 @@
                     
                     // Calculate upgrade cost
                     const cost = Math.floor(upgrade.baseCost * Math.pow(upgrade.costScaling, upgrade.level));
+                    
+                    // Calculate the next value based on current level
                     const nextValue = upgrade.baseValue + (upgrade.level * upgrade.valueScaling);
                     
                     // Create upgrade element
@@ -2752,9 +2757,11 @@
             // Upgrade facility
             facility.level++;
             
+            // Update facility effect value based on level
+            facility.effect.value += facility.effect.valueScaling;
+            
             // Update facility description with new value
-            const newValue = facility.effect.value + facility.effect.valueScaling * (facility.level - 1);
-            facility.description = facility.description.replace(/\d+(\.\d+)?/, newValue);
+            facility.description = facility.effect.description.replace('{value}', facility.effect.value);
             
             // Update UI
             updateFacilitiesList();
@@ -2920,6 +2927,12 @@
             // Upgrade research
             research.level++;
             
+            // Update research effect value based on level
+            research.effect.value += research.effect.valueScaling;
+            
+            // Update research description with new value
+            research.description = research.effect.description.replace('{value}', research.effect.value);
+            
             // Check for Research Catalyst bonus
             let catalystActivated = false;
             gameState.relics.forEach(relic => {
@@ -2935,14 +2948,12 @@
                     
                     if (Math.random() < catalystChance && research.level < research.maxLevel) {
                         research.level++;
+                        research.effect.value += research.effect.valueScaling;
+                        research.description = research.effect.description.replace('{value}', research.effect.value);
                         catalystActivated = true;
                     }
                 }
             });
-            
-            // Update research description with new value
-            const newValue = research.effect.value + research.effect.valueScaling * (research.level - 1);
-            research.description = research.description.replace(/\d+(\.\d+)?/, newValue);
             
             // Update UI
             updateResearchList();
